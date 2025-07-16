@@ -4,25 +4,31 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import HomeScreen from '../screens/Home/HomeScreen';
+import StartedScreen from '../screens/Started/StartedScreen';
+import LoginScreen from '../screens/Auth/LoginScreen';
+import CertificatesScreen from '../screens/Certificates/CertificatesScreen';
+import JobsScreen from '../screens/Jobs/JobsScreen';
+import ProfileScreen from '../screens/Profile/ProfileScreen';
 import { COLORS } from '../styles/theme';
 
-// Định nghĩa kiểu cho params của navigation
+// Navigation params types
 export type RootStackParamList = {
+  Started: undefined;
+  Auth: undefined;
   MainTab: undefined;
-  Settings: undefined;
-  Profile: undefined;
 };
 
 export type MainTabParamList = {
   Home: undefined;
+  Certificates: undefined;
+  Jobs: undefined;
   Profile: undefined;
-  Settings: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
-// Component Tab Navigator
+// Main Tab Navigator
 const MainTabNavigator = () => {
   return (
     <Tab.Navigator
@@ -33,11 +39,14 @@ const MainTabNavigator = () => {
             case 'Home':
               iconName = 'home';
               break;
+            case 'Certificates':
+              iconName = 'school';
+              break;
+            case 'Jobs':
+              iconName = 'work';
+              break;
             case 'Profile':
               iconName = 'person';
-              break;
-            case 'Settings':
-              iconName = 'settings';
               break;
             default:
               iconName = 'home';
@@ -46,28 +55,43 @@ const MainTabNavigator = () => {
         },
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: COLORS.gray,
-        headerShown: false,
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: COLORS.primary,
+        },
+        headerTintColor: '#fff',
       })}
     >
       <Tab.Screen 
         name="Home" 
         component={HomeScreen}
         options={{
+          headerShown: false,
           title: 'Trang chủ'
         }}
       />
       <Tab.Screen 
-        name="Profile" 
-        component={HomeScreen}
+        name="Certificates" 
+        component={CertificatesScreen}
         options={{
-          title: 'Hồ sơ'
+          headerShown: false,
+          title: 'Văn bằng'
         }}
       />
       <Tab.Screen 
-        name="Settings" 
-        component={HomeScreen}
+        name="Jobs" 
+        component={JobsScreen}
         options={{
-          title: 'Cài đặt'
+          headerShown: false,
+          title: 'Việc làm'
+        }}
+      />
+      <Tab.Screen 
+        name="Profile" 
+        component={ProfileScreen}
+        options={{
+          headerShown: false,
+          title: 'Hồ sơ'
         }}
       />
     </Tab.Navigator>
@@ -83,6 +107,8 @@ const AppNavigator = () => {
           headerShown: false,
         }}
       >
+        <Stack.Screen name="Started" component={StartedScreen} />
+        <Stack.Screen name="Auth" component={LoginScreen} />
         <Stack.Screen name="MainTab" component={MainTabNavigator} />
       </Stack.Navigator>
     </NavigationContainer>
