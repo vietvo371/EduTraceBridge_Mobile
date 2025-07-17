@@ -37,6 +37,15 @@ const HomeScreen = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
+        {/* Token Balance Section */}
+        <View style={styles.balanceContainer}>
+          <Text style={styles.balanceLabel}>Số dư token</Text>
+          <View style={styles.balanceWrapper}>
+            <Text style={styles.balanceAmount}>1,234.56</Text>
+            <Text style={styles.tokenSymbol}>DZT</Text>
+          </View>
+        </View>
+
         {/* Stats Section */}
         <View style={styles.statsContainer}>
           {stats.map((item, index) => (
@@ -104,6 +113,44 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: hp('2%'),
+  },
+  balanceContainer: {
+    backgroundColor: '#7F3DFF',
+    padding: wp('5%'),
+    marginHorizontal: wp('5%'),
+    marginTop: hp('2%'),
+    borderRadius: wp('4%'),
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
+  },
+  balanceLabel: {
+    fontSize: wp('3.5%'),
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginBottom: hp('1%'),
+  },
+  balanceWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  balanceAmount: {
+    fontSize: wp('8%'),
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginRight: wp('2%'),
+  },
+  tokenSymbol: {
+    fontSize: wp('4%'),
+    color: '#FFFFFF',
+    fontWeight: '500',
   },
   statsContainer: {
     flexDirection: 'row',
@@ -239,4 +286,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen; 
+export default HomeScreen;

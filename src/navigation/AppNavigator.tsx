@@ -9,6 +9,7 @@ import LoginScreen from '../screens/Auth/LoginScreen';
 import CertificatesScreen from '../screens/Certificates/CertificatesScreen';
 import JobsScreen from '../screens/Jobs/JobsScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
+import LearningScreen from '../screens/Learning/LearningScreen';
 import { COLORS } from '../styles/theme';
 
 // Navigation params types
@@ -21,6 +22,7 @@ export type RootStackParamList = {
 export type MainTabParamList = {
   Home: undefined;
   Certificates: undefined;
+  Learning: undefined;
   Jobs: undefined;
   Profile: undefined;
 };
@@ -41,6 +43,9 @@ const MainTabNavigator = () => {
               break;
             case 'Certificates':
               iconName = 'school';
+              break;
+            case 'Learning':
+              iconName = 'book';
               break;
             case 'Jobs':
               iconName = 'work';
@@ -76,6 +81,14 @@ const MainTabNavigator = () => {
         options={{
           headerShown: false,
           title: 'Văn bằng'
+        }}
+      />
+      <Tab.Screen 
+        name="Learning" 
+        component={LearningScreen}
+        options={{
+          headerShown: false,
+          title: 'Học tập'
         }}
       />
       <Tab.Screen 
@@ -115,4 +128,4 @@ const AppNavigator = () => {
   );
 };
 
-export default AppNavigator; 
+export default AppNavigator;

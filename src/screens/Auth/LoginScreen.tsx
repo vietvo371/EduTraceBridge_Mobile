@@ -90,7 +90,7 @@ const LoginScreen = () => {
               <Text style={styles.registerLink}>Đăng ký ngay</Text>
             </TouchableOpacity>
           </View>
-        </View>
+    </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );

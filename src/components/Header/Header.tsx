@@ -22,7 +22,7 @@ const Header: React.FC<HeaderProps> = ({
           <View style={styles.iconContainer}>
             <Icon name="notifications" size={22} color={COLORS.primary} />
           </View>
-        </TouchableOpacity>
+      </TouchableOpacity>
       </View>
     </View>
   );

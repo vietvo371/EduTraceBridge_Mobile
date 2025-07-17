@@ -58,8 +58,6 @@ const ProfileScreen = () => {
 
   return (
     <ScrollView style={styles.container}>
-      {/* Header Section */}
-      
       <View style={styles.header}>
         <View style={styles.profileImageContainer}>
           <Image
@@ -166,15 +164,23 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f8f9fa',
   },
   header: {
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.primary,
     alignItems: 'center',
     paddingTop: hp('5%'),
     padding: wp('5%'),
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   profileImageContainer: {
     position: 'relative',
@@ -184,34 +190,56 @@ const styles = StyleSheet.create({
     width: wp('30%'),
     height: wp('30%'),
     borderRadius: wp('15%'),
+    borderWidth: 3,
+    borderColor: '#fff',
   },
   editImageButton: {
     position: 'absolute',
     right: 0,
     bottom: 0,
-    backgroundColor: COLORS.primary,
+    backgroundColor: '#2196F3',
     padding: wp('2%'),
     borderRadius: wp('5%'),
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   name: {
     fontSize: wp('6%'),
     fontWeight: 'bold',
-    color: COLORS.text,
+    color: '#fff',
     marginBottom: hp('0.5%'),
   },
   major: {
     fontSize: wp('4%'),
-    color: COLORS.gray,
+    color: '#fff',
     marginBottom: hp('0.5%'),
+    opacity: 0.9,
   },
   university: {
     fontSize: wp('4%'),
-    color: COLORS.primary,
+    color: '#fff',
+    opacity: 0.9,
   },
   section: {
     backgroundColor: '#fff',
     padding: wp('5%'),
-    marginBottom: hp('2%'),
+    marginHorizontal: wp('4%'),
+    marginVertical: hp('1%'),
+    borderRadius: 15,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -245,16 +273,17 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   skillTag: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: COLORS.primary,
     paddingHorizontal: wp('3%'),
     paddingVertical: hp('1%'),
-    borderRadius: wp('2%'),
+    borderRadius: wp('5%'),
     marginRight: wp('2%'),
     marginBottom: hp('1%'),
   },
   skillText: {
     fontSize: wp('3.5%'),
-    color: COLORS.gray,
+    color: '#fff',
+    fontWeight: '500',
   },
   educationItem: {
     marginBottom: hp('2%'),
@@ -317,9 +346,17 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     paddingHorizontal: wp('5%'),
     paddingVertical: hp('1.5%'),
-    borderRadius: wp('2%'),
+    borderRadius: wp('5%'),
     flex: 0.48,
     justifyContent: 'center',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   downloadButton: {
     backgroundColor: '#2196F3',
@@ -332,4 +369,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProfileScreen; 
+export default ProfileScreen;

@@ -5,7 +5,7 @@ import {
 } from 'react-native-responsive-screen';
 
 export const COLORS = {
-  primary: '#6200ea',
+  primary: '#7F3DFF',
   white: '#fff',
   black: '#000',
   gray: '#757575',
