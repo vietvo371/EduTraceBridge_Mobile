@@ -11,12 +11,16 @@ import JobsScreen from '../screens/Jobs/JobsScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 import LearningScreen from '../screens/Learning/LearningScreen';
 import { COLORS } from '../styles/theme';
+import DetailLearningScreen from '../screens/Learning/DetailLearningScreen';
+import DetailJobScreen from '../screens/Jobs/DetailJobScreen';
 
 // Navigation params types
 export type RootStackParamList = {
   Started: undefined;
   Auth: undefined;
   MainTab: undefined;
+  DetailLearningScreen: undefined;
+  DetailJobScreen: undefined;
 };
 
 export type MainTabParamList = {
@@ -123,6 +127,8 @@ const AppNavigator = () => {
         <Stack.Screen name="Started" component={StartedScreen} />
         <Stack.Screen name="Auth" component={LoginScreen} />
         <Stack.Screen name="MainTab" component={MainTabNavigator} />
+        <Stack.Screen name="DetailJobScreen" component={DetailJobScreen} />
+        <Stack.Screen name="DetailLearningScreen" component={DetailLearningScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

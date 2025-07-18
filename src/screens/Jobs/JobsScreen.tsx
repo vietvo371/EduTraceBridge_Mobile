@@ -12,7 +12,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Header from '../../components/Header/Header';
 
-const JobsScreen = () => {
+const JobsScreen = ( {navigation} : any) => {
   const [activeFilter, setActiveFilter] = useState('Tất cả');
 
   const jobs = [
@@ -87,7 +87,10 @@ const JobsScreen = () => {
 
       <View style={styles.jobFooter}>
         <Text style={styles.timeText}>{job.posted}</Text>
-        <TouchableOpacity style={styles.applyButton}>
+        <TouchableOpacity 
+          onPress={() => navigation.navigate('DetailJobScreen', { job })} 
+          style={styles.applyButton}
+        >
           <Text style={styles.applyButtonText}>Ứng tuyển ngay</Text>
         </TouchableOpacity>
       </View>
@@ -298,4 +301,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default JobsScreen; 
+export default JobsScreen;

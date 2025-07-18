@@ -45,7 +45,8 @@ const DUMMY_COURSES: Course[] = [
   },
 ];
 
-const LearningScreen = () => {
+
+const LearningScreen = ({ navigation }: any) => {
   const [activeFilter, setActiveFilter] = useState('Tất cả');
   const filters = ['Tất cả', 'Cơ bản', 'Trung bình', 'Nâng cao'];
 
@@ -53,8 +54,15 @@ const LearningScreen = () => {
     console.log(`Buying course: ${course.title}`);
   };
 
+  const handleCoursePress = (course: Course) => {
+    navigation.navigate('DetailLearningScreen', { course });
+  };
+
   const renderCourseItem = ({ item }: { item: Course }) => (
-    <View style={styles.courseCard}>
+    <TouchableOpacity 
+      style={styles.courseCard}
+      onPress={() => handleCoursePress(item)}
+    >
       <View style={styles.courseHeader}>
         <View>
           <Text style={styles.courseTitle}>{item.title}</Text>
@@ -88,7 +96,7 @@ const LearningScreen = () => {
           <Text style={styles.buyButtonText}>Đăng ký học</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (

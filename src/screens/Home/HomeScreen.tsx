@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,29 +6,43 @@ import {
   ScrollView,
   TouchableOpacity,
   Platform,
+  Modal,
+  Pressable,
 } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Header from '../../components/Header/Header';
+import { useNavigation } from '@react-navigation/native';
 
-const HomeScreen = () => {
+const HomeScreen = ( navigate) => {
+  const navigation = useNavigation();
+  const [showShareModal, setShowShareModal] = useState(false);
+
   const stats = [
     { icon: 'school', label: 'Văn bằng', value: '3' },
     { icon: 'work', label: 'Việc làm', value: '5' },
     { icon: 'star', label: 'Điểm TB', value: '3.5' },
   ];
 
-  const quickActions = [
-    { icon: 'qr-code-scanner', label: 'Quét mã QR' },
-    { icon: 'share', label: 'Chia sẻ hồ sơ' },
-    { icon: 'description', label: 'Xem CV' },
-    { icon: 'notifications', label: 'Thông báo' },
+  const shareOptions = [
+    { icon: 'content-copy', label: 'Sao chép liên kết' },
+    { icon: 'facebook', label: 'Facebook' },
+    { icon: 'mail', label: 'Email' },
+    { icon: 'message', label: 'Tin nhắn' },
+    { icon: 'more-horiz', label: 'Thêm' },
   ];
 
   const handleNotificationPress = () => {
     // Handle notification press
   };
 
+  const handleSharePress = () => {
+    setShowShareModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowShareModal(false);
+  };
   return (
     <View style={styles.container}>
       <Header onNotificationPress={handleNotificationPress} />
@@ -59,20 +73,6 @@ const HomeScreen = () => {
           ))}
         </View>
 
-        {/* Quick Actions */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Thao tác nhanh</Text>
-          <View style={styles.quickActions}>
-            {quickActions.map((action, index) => (
-              <TouchableOpacity key={index} style={styles.actionItem}>
-                <View style={styles.actionIcon}>
-                  <Icon name={action.icon} size={22} color="#7F3DFF" />
-                </View>
-                <Text style={styles.actionLabel}>{action.label}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
 
         {/* Recent Activities */}
         <View style={styles.section}>
@@ -99,6 +99,39 @@ const HomeScreen = () => {
           </View>
         </View>
       </ScrollView>
+
+      {/* Share Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showShareModal}
+        onRequestClose={handleCloseModal}
+      >
+        <Pressable style={styles.modalOverlay} onPress={handleCloseModal}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <View style={styles.modalIndicator} />
+            </View>
+            <Text style={styles.modalTitle}>Chia sẻ với</Text>
+            <View style={styles.shareOptions}>
+              {shareOptions.map((option, index) => (
+                <TouchableOpacity key={index} style={styles.shareOption}>
+                  <View style={styles.shareIconContainer}>
+                    <Icon name={option.icon} size={24} color="#7F3DFF" />
+                  </View>
+                  <Text style={styles.shareOptionLabel}>{option.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            <TouchableOpacity 
+              style={styles.cancelButton}
+              onPress={handleCloseModal}
+            >
+              <Text style={styles.cancelButtonText}>Huỷ</Text>
+            </TouchableOpacity>
+          </View>
+        </Pressable>
+      </Modal>
     </View>
   );
 };
@@ -283,6 +316,72 @@ const styles = StyleSheet.create({
   activityTime: {
     fontSize: wp('3%'),
     color: '#666666',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: wp('5%'),
+    paddingBottom: Platform.OS === 'ios' ? hp('4%') : hp('2%'),
+  },
+  modalHeader: {
+    alignItems: 'center',
+    marginBottom: hp('2%'),
+  },
+  modalIndicator: {
+    width: wp('10%'),
+    height: 4,
+    backgroundColor: '#E0E0E0',
+    borderRadius: 2,
+  },
+  modalTitle: {
+    fontSize: wp('4%'),
+    fontWeight: '600',
+    color: '#2D2D2D',
+    marginBottom: hp('3%'),
+    textAlign: 'center',
+  },
+  shareOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingHorizontal: wp('2%'),
+  },
+  shareOption: {
+    width: wp('18%'),
+    alignItems: 'center',
+    marginBottom: hp('2%'),
+  },
+  shareIconContainer: {
+    width: wp('12%'),
+    height: wp('12%'),
+    backgroundColor: 'rgba(127, 61, 255, 0.1)',
+    borderRadius: wp('6%'),
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: hp('1%'),
+  },
+  shareOptionLabel: {
+    fontSize: wp('3%'),
+    color: '#666666',
+    textAlign: 'center',
+  },
+  cancelButton: {
+    marginTop: hp('2%'),
+    paddingVertical: hp('1.5%'),
+    backgroundColor: '#F8F8FA',
+    borderRadius: wp('2%'),
+  },
+  cancelButtonText: {
+    fontSize: wp('4%'),
+    color: '#2D2D2D',
+    textAlign: 'center',
+    fontWeight: '500',
   },
 });
 

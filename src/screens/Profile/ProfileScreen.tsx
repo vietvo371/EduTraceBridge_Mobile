@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: COLORS.primary,
     alignItems: 'center',
-    paddingTop: hp('5%'),
+    paddingTop: hp('10%'),
     padding: wp('5%'),
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
