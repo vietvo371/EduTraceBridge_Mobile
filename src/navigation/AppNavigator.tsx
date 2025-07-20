@@ -10,12 +10,14 @@ import CertificatesScreen from '../screens/Certificates/CertificatesScreen';
 import JobsScreen from '../screens/Jobs/JobsScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 import LearningScreen from '../screens/Learning/LearningScreen';
+import LoadingScreen from '../screens/Loading/LoadingScreen';
 import { COLORS } from '../styles/theme';
 import DetailLearningScreen from '../screens/Learning/DetailLearningScreen';
 import DetailJobScreen from '../screens/Jobs/DetailJobScreen';
 
 // Navigation params types
 export type RootStackParamList = {
+  Loading: undefined;
   Started: undefined;
   Auth: undefined;
   MainTab: undefined;
@@ -33,6 +35,10 @@ export type MainTabParamList = {
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
+
+interface AppNavigatorProps {
+  initialRoute?: keyof RootStackParamList;
+}
 
 // Main Tab Navigator
 const MainTabNavigator = () => {
@@ -71,40 +77,40 @@ const MainTabNavigator = () => {
         headerTintColor: '#fff',
       })}
     >
-      <Tab.Screen 
-        name="Home" 
+      <Tab.Screen
+        name="Home"
         component={HomeScreen}
         options={{
           headerShown: false,
           title: 'Trang chủ'
         }}
       />
-      <Tab.Screen 
-        name="Certificates" 
+      <Tab.Screen
+        name="Certificates"
         component={CertificatesScreen}
         options={{
           headerShown: false,
           title: 'Văn bằng'
         }}
       />
-      <Tab.Screen 
-        name="Learning" 
+      <Tab.Screen
+        name="Learning"
         component={LearningScreen}
         options={{
           headerShown: false,
           title: 'Học tập'
         }}
       />
-      <Tab.Screen 
-        name="Jobs" 
+      <Tab.Screen
+        name="Jobs"
         component={JobsScreen}
         options={{
           headerShown: false,
           title: 'Việc làm'
         }}
       />
-      <Tab.Screen 
-        name="Profile" 
+      <Tab.Screen
+        name="Profile"
         component={ProfileScreen}
         options={{
           headerShown: false,
@@ -120,10 +126,12 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
+        initialRouteName="Loading"
         screenOptions={{
           headerShown: false,
         }}
       >
+        <Stack.Screen name="Loading" component={LoadingScreen} />
         <Stack.Screen name="Started" component={StartedScreen} />
         <Stack.Screen name="Auth" component={LoginScreen} />
         <Stack.Screen name="MainTab" component={MainTabNavigator} />

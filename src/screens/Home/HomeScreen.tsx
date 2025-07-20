@@ -14,7 +14,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Header from '../../components/Header/Header';
 import { useNavigation } from '@react-navigation/native';
 
-const HomeScreen = ( navigate) => {
+const HomeScreen = ( navigate : any) => {
   const navigation = useNavigation();
   const [showShareModal, setShowShareModal] = useState(false);
 

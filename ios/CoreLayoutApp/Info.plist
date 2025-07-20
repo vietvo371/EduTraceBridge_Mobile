@@ -71,5 +71,27 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
+	
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Edu BridgeTrace needs access to play music</string>
+	
+	<key>NSCameraUsageDescription</key>
+	<string>Edu BridgeTrace needs access to use your camera</string>
+	
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Edu BridgeTrace needs access to photo library</string>
+	
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Edu BridgeTrace needs access to save photos</string>
+	
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Edu BridgeTrace needs access to microphone</string>
+	
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>Edu BridgeTrace needs to send you notifications</string>
 </dict>
 </plist>

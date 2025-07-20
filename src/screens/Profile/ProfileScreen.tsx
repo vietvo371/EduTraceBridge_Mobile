@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { use, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -10,8 +10,19 @@ import {
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '../../styles/theme';
+import api from '../../services/api';
+import { showToast } from '../../utils/toast';
+import { removeToken } from '../../services/TokenManager';
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ navigation }: any) => {
+  const [userInfo, setUserInfo] = useState({ 
+    email : '', 
+    full_name : '',
+    phone : '',
+    student_code : '',
+    wallet_address : '',
+  });
+  
   const studentInfo = {
     name: 'Nguyễn Văn A',
     studentId: '22520001',
@@ -31,6 +42,24 @@ const ProfileScreen = () => {
     'Web3.js',
     'UI/UX Design',
   ];
+  const getDataProfile = async () => {
+    try {
+      const response = await api.get('/student/get-profile');
+      setUserInfo(response.data.data);
+      return response.data;
+    } catch (error: any) {
+      console.log(error.response);
+    }
+  }
+
+  // Add useEffect to monitor userInfo changes
+  useEffect(() => {
+    console.log('Updated User Info:', userInfo);
+  }, [userInfo]);
+
+  useEffect(() => {
+    getDataProfile()
+  }, []);
 
   const education = [
     {
@@ -55,6 +84,25 @@ const ProfileScreen = () => {
       description: 'Phát triển ứng dụng di động sử dụng React Native.',
     },
   ];
+  const actionLogout = () => {
+    api.post('/student/logout')
+      .then((res) => {
+        console.log(res.data);
+        if (res.data.status) {
+          removeToken();
+          navigation.navigate('Auth');
+          showToast.success(res.data.message || 'Đăng xuất thành công!');
+        }
+        else {
+          removeToken();
+          navigation.navigate('Auth');
+          showToast.error(res.data.message || 'Đăng xuất thất bại!');
+        }
+      })
+      .catch((error: any) => {
+        console.error('Logout error:', error);
+      })
+  }
 
   return (
     <ScrollView style={styles.container}>
@@ -68,7 +116,7 @@ const ProfileScreen = () => {
             <Icon name="camera-alt" size={20} color="#fff" />
           </TouchableOpacity>
         </View>
-        <Text style={styles.name}>{studentInfo.name}</Text>
+        <Text style={styles.name}>{userInfo.full_name}</Text>
         <Text style={styles.major}>{studentInfo.major}</Text>
         <Text style={styles.university}>{studentInfo.university}</Text>
       </View>
@@ -89,11 +137,11 @@ const ProfileScreen = () => {
         <Text style={styles.sectionTitle}>Thông tin liên hệ</Text>
         <View style={styles.contactItem}>
           <Icon name="email" size={20} color={COLORS.gray} />
-          <Text style={styles.contactText}>{studentInfo.email}</Text>
+          <Text style={styles.contactText}>{userInfo.email}</Text>
         </View>
         <View style={styles.contactItem}>
           <Icon name="phone" size={20} color={COLORS.gray} />
-          <Text style={styles.contactText}>{studentInfo.phone}</Text>
+          <Text style={styles.contactText}>{userInfo.phone}</Text>
         </View>
         <View style={styles.contactItem}>
           <Icon name="location-on" size={20} color={COLORS.gray} />
@@ -157,7 +205,17 @@ const ProfileScreen = () => {
           <Text style={styles.actionButtonText}>Tải CV</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Logout Button */}
+      <TouchableOpacity
+        style={styles.logoutButton}
+        onPress={actionLogout}
+      >
+        <Icon name="logout" size={20} color="#fff" />
+        <Text style={styles.actionButtonText}>Đăng xuất</Text>
+      </TouchableOpacity>
     </ScrollView>
+
   );
 };
 
@@ -366,6 +424,25 @@ const styles = StyleSheet.create({
     fontSize: wp('3.5%'),
     fontWeight: '500',
     marginLeft: wp('2%'),
+  },
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#dc3545',
+    paddingHorizontal: wp('5%'),
+    paddingVertical: hp('1.5%'),
+    borderRadius: wp('5%'),
+    marginHorizontal: wp('5%'),
+    marginBottom: hp('3%'),
+    justifyContent: 'center',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
 });
 

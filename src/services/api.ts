@@ -1,88 +1,64 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
+import { getToken, saveToken } from "./TokenManager";
 
-// Định nghĩa interface cho response
 interface ApiResponse<T> {
   data: T;
   status: number;
   message: string;
 }
 
-// Tạo instance của axios
-const api: AxiosInstance = axios.create({
-  baseURL: 'https://api.example.com', // Thay đổi URL API của bạn
-  timeout: 10000,
+const baseUrl = 'http://192.168.1.146:8000/api';
+
+const api = axios.create({
+  baseURL: baseUrl,
   headers: {
-    'Content-Type': 'application/json',
+      'Content-Type': 'application/json',
   },
+  timeout: 30000, // Increase timeout to 30 seconds
+  timeoutErrorMessage: 'Request timeout - Please check your internet connection',
 });
 
-// Interceptor cho request
-api.interceptors.request.use(
-  (config) => {
-    // Thêm token vào header nếu có
-    const token = localStorage.getItem('token');
-    if (token) {
+api.interceptors.request.use(async (config) => {
+  const token = await getToken();
+  console.log('Token:', token);
+  if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error: AxiosError) => {
-    return Promise.reject(error);
   }
-);
+  return config;
+}); 
 
-// Interceptor cho response
+// Add retry logic
 api.interceptors.response.use(
-  (response: AxiosResponse) => {
+  (response) => {
     return response;
   },
-  (error: AxiosError) => {
-    if (error.response?.status === 401) {
-      // Xử lý lỗi authentication
-      localStorage.removeItem('token');
-      // Redirect to login
+  async (error: AxiosError) => {
+    const config = error.config as any;
+    
+    // If there's no config or we've reached max retries, reject the promise
+    if (!config || !config.retry || config._retry >= config.retry) {
+      if (error.message.includes('timeout')) {
+        return Promise.reject({
+          ...error,
+          message: 'Request timed out. Please check your internet connection and try again.'
+        });
+      }
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
+
+    // Increment retry count
+    config._retry = config._retry || 0;
+    config._retry++;
+
+    // Create new promise with delay
+    const delayRetry = new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(api(config));
+      }, config.retryDelay || 1000);
+    });
+
+    return delayRetry;
   }
 );
 
-// Các hàm helper để gọi API
-export const apiService = {
-  get: async <T>(url: string, params?: any): Promise<ApiResponse<T>> => {
-    try {
-      const response = await api.get<ApiResponse<T>>(url, { params });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  post: async <T>(url: string, data?: any): Promise<ApiResponse<T>> => {
-    try {
-      const response = await api.post<ApiResponse<T>>(url, data);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  put: async <T>(url: string, data?: any): Promise<ApiResponse<T>> => {
-    try {
-      const response = await api.put<ApiResponse<T>>(url, data);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  delete: async <T>(url: string): Promise<ApiResponse<T>> => {
-    try {
-      const response = await api.delete<ApiResponse<T>>(url);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  },
-};
-
-export default api; 
+export default api;
