@@ -14,35 +14,46 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Header from '../../components/Header/Header';
 import { useNavigation } from '@react-navigation/native';
 
-const HomeScreen = ( navigate : any) => {
+const HomeScreen = () => {
   const navigation = useNavigation();
   const [showShareModal, setShowShareModal] = useState(false);
+  const [isBalanceVisible, setIsBalanceVisible] = useState(true);
 
   const stats = [
-    { icon: 'school', label: 'Văn bằng', value: '3' },
-    { icon: 'work', label: 'Việc làm', value: '5' },
-    { icon: 'star', label: 'Điểm TB', value: '3.5' },
+    { icon: 'school', label: 'Chứng chỉ', value: '2', onPress: () => navigation.navigate('Certificates' as never) },
+    { icon: 'work', label: 'Việc làm', value: '5', onPress: () => navigation.navigate('Jobs' as never) },
+    { icon: 'menu-book', label: 'Khoá học', value: '3', onPress: () => navigation.navigate('Learning' as never) },
   ];
 
-  const shareOptions = [
-    { icon: 'content-copy', label: 'Sao chép liên kết' },
-    { icon: 'facebook', label: 'Facebook' },
-    { icon: 'mail', label: 'Email' },
-    { icon: 'message', label: 'Tin nhắn' },
-    { icon: 'more-horiz', label: 'Thêm' },
+  const recentActivities = [
+    {
+      icon: 'verified',
+      text: 'Nhận chứng chỉ Blockchain Basic',
+      time: '2 giờ trước',
+      onPress: () => navigation.navigate('Certificates' as never)
+    },
+    {
+      icon: 'work',
+      text: 'Ứng tuyển vị trí Frontend Developer',
+      time: '1 ngày trước',
+      onPress: () => navigation.navigate('Jobs' as never)
+    },
+    {
+      icon: 'menu-book',
+      text: 'Hoàn thành khoá học React Native',
+      time: '2 ngày trước',
+      onPress: () => navigation.navigate('Learning' as never)
+    }
   ];
 
   const handleNotificationPress = () => {
-    // Handle notification press
+    navigation.navigate('Notification' as never);
   };
 
-  const handleSharePress = () => {
-    setShowShareModal(true);
+  const toggleBalanceVisibility = () => {
+    setIsBalanceVisible(!isBalanceVisible);
   };
 
-  const handleCloseModal = () => {
-    setShowShareModal(false);
-  };
   return (
     <View style={styles.container}>
       <Header onNotificationPress={handleNotificationPress} />
@@ -53,9 +64,20 @@ const HomeScreen = ( navigate : any) => {
       >
         {/* Token Balance Section */}
         <View style={styles.balanceContainer}>
-          <Text style={styles.balanceLabel}>Số dư token</Text>
+          <View style={styles.balanceHeader}>
+            <Text style={styles.balanceLabel}>Số dư token</Text>
+            <TouchableOpacity onPress={toggleBalanceVisibility}>
+              <Icon 
+                name={isBalanceVisible ? 'visibility' : 'visibility-off'} 
+                size={24} 
+                color="#FFFFFF" 
+              />
+            </TouchableOpacity>
+          </View>
           <View style={styles.balanceWrapper}>
-            <Text style={styles.balanceAmount}>1,234.56</Text>
+            <Text style={styles.balanceAmount}>
+              {isBalanceVisible ? '1,234.56' : '•••••'}
+            </Text>
             <Text style={styles.tokenSymbol}>DZT</Text>
           </View>
         </View>
@@ -63,75 +85,43 @@ const HomeScreen = ( navigate : any) => {
         {/* Stats Section */}
         <View style={styles.statsContainer}>
           {stats.map((item, index) => (
-            <View key={index} style={styles.statItem}>
+            <TouchableOpacity 
+              key={index} 
+              style={styles.statItem}
+              onPress={item.onPress}
+            >
               <View style={styles.statIconContainer}>
                 <Icon name={item.icon} size={24} color="#7F3DFF" />
               </View>
               <Text style={styles.statValue}>{item.value}</Text>
               <Text style={styles.statLabel}>{item.label}</Text>
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
-
 
         {/* Recent Activities */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Hoạt động gần đây</Text>
           <View style={styles.activityList}>
-            <TouchableOpacity style={styles.activityItem}>
-              <View style={styles.activityIconContainer}>
-                <Icon name="verified" size={20} color="#7F3DFF" />
-              </View>
-              <View style={styles.activityContent}>
-                <Text style={styles.activityText}>Nhận chứng chỉ Blockchain Basic</Text>
-                <Text style={styles.activityTime}>2 giờ trước</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.activityItem}>
-              <View style={styles.activityIconContainer}>
-                <Icon name="work" size={20} color="#7F3DFF" />
-              </View>
-              <View style={styles.activityContent}>
-                <Text style={styles.activityText}>Ứng tuyển vị trí Frontend Developer</Text>
-                <Text style={styles.activityTime}>1 ngày trước</Text>
-              </View>
-            </TouchableOpacity>
+            {recentActivities.map((activity, index) => (
+              <TouchableOpacity 
+                key={index} 
+                style={styles.activityItem}
+                onPress={activity.onPress}
+              >
+                <View style={styles.activityIconContainer}>
+                  <Icon name={activity.icon} size={20} color="#7F3DFF" />
+                </View>
+                <View style={styles.activityContent}>
+                  <Text style={styles.activityText}>{activity.text}</Text>
+                  <Text style={styles.activityTime}>{activity.time}</Text>
+                </View>
+                <Icon name="chevron-right" size={24} color="#666666" />
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
       </ScrollView>
-
-      {/* Share Modal */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={showShareModal}
-        onRequestClose={handleCloseModal}
-      >
-        <Pressable style={styles.modalOverlay} onPress={handleCloseModal}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <View style={styles.modalIndicator} />
-            </View>
-            <Text style={styles.modalTitle}>Chia sẻ với</Text>
-            <View style={styles.shareOptions}>
-              {shareOptions.map((option, index) => (
-                <TouchableOpacity key={index} style={styles.shareOption}>
-                  <View style={styles.shareIconContainer}>
-                    <Icon name={option.icon} size={24} color="#7F3DFF" />
-                  </View>
-                  <Text style={styles.shareOptionLabel}>{option.label}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            <TouchableOpacity 
-              style={styles.cancelButton}
-              onPress={handleCloseModal}
-            >
-              <Text style={styles.cancelButtonText}>Huỷ</Text>
-            </TouchableOpacity>
-          </View>
-        </Pressable>
-      </Modal>
     </View>
   );
 };
@@ -165,10 +155,15 @@ const styles = StyleSheet.create({
       },
     }),
   },
+  balanceHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: hp('1%'),
+  },
   balanceLabel: {
     fontSize: wp('3.5%'),
     color: 'rgba(255, 255, 255, 0.8)',
-    marginBottom: hp('1%'),
   },
   balanceWrapper: {
     flexDirection: 'row',
@@ -196,10 +191,7 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: '#000',
-        shadowOffset: {
-          width: 0,
-          height: 2,
-        },
+        shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 8,
       },
@@ -241,10 +233,7 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: '#000',
-        shadowOffset: {
-          width: 0,
-          height: 2,
-        },
+        shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 8,
       },
@@ -258,31 +247,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#2D2D2D',
     marginBottom: hp('3%'),
-  },
-  quickActions: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  actionItem: {
-    width: '23%',
-    alignItems: 'center',
-    marginBottom: hp('2%'),
-  },
-  actionIcon: {
-    width: wp('14%'),
-    height: wp('14%'),
-    backgroundColor: 'rgba(127, 61, 255, 0.1)',
-    borderRadius: wp('7%'),
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: hp('1%'),
-  },
-  actionLabel: {
-    fontSize: wp('3%'),
-    color: '#666666',
-    textAlign: 'center',
-    marginTop: hp('0.5%'),
   },
   activityList: {
     gap: hp('2%'),
@@ -316,72 +280,6 @@ const styles = StyleSheet.create({
   activityTime: {
     fontSize: wp('3%'),
     color: '#666666',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: wp('5%'),
-    paddingBottom: Platform.OS === 'ios' ? hp('4%') : hp('2%'),
-  },
-  modalHeader: {
-    alignItems: 'center',
-    marginBottom: hp('2%'),
-  },
-  modalIndicator: {
-    width: wp('10%'),
-    height: 4,
-    backgroundColor: '#E0E0E0',
-    borderRadius: 2,
-  },
-  modalTitle: {
-    fontSize: wp('4%'),
-    fontWeight: '600',
-    color: '#2D2D2D',
-    marginBottom: hp('3%'),
-    textAlign: 'center',
-  },
-  shareOptions: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    paddingHorizontal: wp('2%'),
-  },
-  shareOption: {
-    width: wp('18%'),
-    alignItems: 'center',
-    marginBottom: hp('2%'),
-  },
-  shareIconContainer: {
-    width: wp('12%'),
-    height: wp('12%'),
-    backgroundColor: 'rgba(127, 61, 255, 0.1)',
-    borderRadius: wp('6%'),
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: hp('1%'),
-  },
-  shareOptionLabel: {
-    fontSize: wp('3%'),
-    color: '#666666',
-    textAlign: 'center',
-  },
-  cancelButton: {
-    marginTop: hp('2%'),
-    paddingVertical: hp('1.5%'),
-    backgroundColor: '#F8F8FA',
-    borderRadius: wp('2%'),
-  },
-  cancelButtonText: {
-    fontSize: wp('4%'),
-    color: '#2D2D2D',
-    textAlign: 'center',
-    fontWeight: '500',
   },
 });
 

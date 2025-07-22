@@ -12,6 +12,7 @@
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		96A1AE2ABEC026C840013FFE /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
+		E2FAA6072E2E2E4700946C9F /* CV_VoVanViet.pdf in Resources */ = {isa = PBXBuildFile; fileRef = E2FAA6062E2E2E4700946C9F /* CV_VoVanViet.pdf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = CoreLayoutApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		896D4F2966C919306A74A28A /* Pods-CoreLayoutApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CoreLayoutApp.release.xcconfig"; path = "Target Support Files/Pods-CoreLayoutApp/Pods-CoreLayoutApp.release.xcconfig"; sourceTree = "<group>"; };
 		8C1BA55F67259CC5404BECDE /* libPods-CoreLayoutApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CoreLayoutApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E2FAA6062E2E2E4700946C9F /* CV_VoVanViet.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = CV_VoVanViet.pdf; path = CoreLayoutApp/Resources/CV_VoVanViet.pdf; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -70,6 +72,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				E2FAA6062E2E2E4700946C9F /* CV_VoVanViet.pdf */,
 				13B07FAE1A68108700A75B9A /* CoreLayoutApp */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
@@ -158,6 +161,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E2FAA6072E2E2E4700946C9F /* CV_VoVanViet.pdf in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				96A1AE2ABEC026C840013FFE /* PrivacyInfo.xcprivacy in Resources */,

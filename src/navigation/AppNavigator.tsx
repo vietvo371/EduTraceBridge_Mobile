@@ -14,6 +14,8 @@ import LoadingScreen from '../screens/Loading/LoadingScreen';
 import { COLORS } from '../styles/theme';
 import DetailLearningScreen from '../screens/Learning/DetailLearningScreen';
 import DetailJobScreen from '../screens/Jobs/DetailJobScreen';
+import PDFViewerScreen from '../screens/Profile/PDFViewerScreen';
+import NotificationScreen from '../screens/Notification/NotificationScreen';
 
 // Navigation params types
 export type RootStackParamList = {
@@ -23,6 +25,8 @@ export type RootStackParamList = {
   MainTab: undefined;
   DetailLearningScreen: undefined;
   DetailJobScreen: undefined;
+  PDFViewer: undefined;
+  Notification: undefined;
 };
 
 export type MainTabParamList = {
@@ -137,6 +141,22 @@ const AppNavigator = () => {
         <Stack.Screen name="MainTab" component={MainTabNavigator} />
         <Stack.Screen name="DetailJobScreen" component={DetailJobScreen} />
         <Stack.Screen name="DetailLearningScreen" component={DetailLearningScreen} />
+        <Stack.Screen
+          name="PDFViewer"
+          component={PDFViewerScreen}
+          options={{
+            headerShown: true,
+            headerStyle: {
+              backgroundColor: COLORS.primary,
+            },
+            headerTintColor: '#fff',
+            title: 'Xem CV'
+          }}
+        />
+        <Stack.Screen 
+          name="Notification" 
+          component={NotificationScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

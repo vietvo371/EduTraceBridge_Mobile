@@ -50,6 +50,10 @@ const JobsScreen = ( {navigation} : any) => {
 
   const filters = ['Tất cả', 'Full-time', 'Part-time', 'Remote'];
 
+  const handleNotificationPress = () => {
+    navigation.navigate('Notification' as never);
+  };
+
   const renderJobCard = (job: any) => (
     <View key={job.id} style={styles.jobCard}>
       <View style={styles.jobHeader}>
@@ -99,7 +103,7 @@ const JobsScreen = ( {navigation} : any) => {
 
   return (
     <View style={styles.container}>
-      <Header onNotificationPress={() => {}} />
+      <Header onNotificationPress={handleNotificationPress} />
       <View style={styles.searchContainer}>
         <View style={styles.searchBox}>
           <Icon name="search" size={20} color="#666666" />

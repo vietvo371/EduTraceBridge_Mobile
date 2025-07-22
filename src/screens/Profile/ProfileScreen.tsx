@@ -6,9 +6,14 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  Share,
+  Linking,
+  Platform,
+  PermissionsAndroid,
 } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import RNFS from 'react-native-fs';
 import { COLORS } from '../../styles/theme';
 import api from '../../services/api';
 import { showToast } from '../../utils/toast';
@@ -104,6 +109,126 @@ const ProfileScreen = ({ navigation }: any) => {
       })
   }
 
+  const handleShareProfile = async () => {
+    try {
+      const shareContent = {
+        message: `${userInfo.full_name}\n${studentInfo.major}\n${studentInfo.university}\n\nEmail: ${userInfo.email}\nPhone: ${userInfo.phone}\n\nSkills: ${skills.join(', ')}\n\nEducation: ${education[0].school} - ${education[0].degree}\n\nExperience: ${experience.map(exp => `\n- ${exp.position} at ${exp.company}`).join('')}`,
+        title: 'Professional Profile',
+      };
+
+      const result = await Share.share(shareContent);
+      if (result.action === Share.sharedAction) {
+        showToast.success('Chia sẻ hồ sơ thành công!');
+      }
+    } catch (error: any) {
+      showToast.error('Không thể chia sẻ hồ sơ: ' + error.message);
+    }
+  };
+
+  const checkPermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: 'Storage Permission Required',
+            message: 'Application needs access to your storage to download CV',
+            buttonPositive: 'OK',
+          }
+        );
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        console.warn(err);
+        return false;
+      }
+    } else {
+      return true;
+    }
+  };
+
+  const handleDownloadCV = async () => {
+    try {
+      // Kiểm tra quyền truy cập bộ nhớ (cho Android)
+      const isPermitted = await checkPermission();
+      if (!isPermitted) {
+        showToast.error('Cần cấp quyền truy cập bộ nhớ để tải CV');
+        return;
+      }
+
+      // Đường dẫn đến file PDF trong assets
+      let assetPath;
+      if (Platform.OS === 'android') {
+        assetPath = 'file:///android_asset/pdf/CV_VoVanViet.pdf';
+      } else {
+        // Với iOS, file nằm trực tiếp trong bundle sau khi được copy
+        assetPath = `${RNFS.MainBundlePath}/CV_VoVanViet.pdf`;
+      }
+
+      console.log('Checking file at path:', assetPath);
+
+      // Kiểm tra file tồn tại
+      const exists = await RNFS.exists(assetPath);
+      console.log('File exists:', exists);
+      
+      if (!exists) {
+        // Thử tìm file trong các đường dẫn khác nếu không tìm thấy
+        const alternativePath = Platform.OS === 'ios' 
+          ? `${RNFS.DocumentDirectoryPath}/../CV_VoVanViet.pdf`
+          : assetPath;
+        
+        const existsAlternative = await RNFS.exists(alternativePath);
+        if (existsAlternative) {
+          assetPath = alternativePath;
+          console.log('File found at alternative path:', alternativePath);
+        } else {
+          console.error('File not found at path:', assetPath);
+          console.error('Also not found at alternative path:', alternativePath);
+          showToast.error('Không tìm thấy file CV');
+          return;
+        }
+      }
+
+      // Đường dẫn lưu file trong bộ nhớ thiết bị
+      const downloadPath = Platform.OS === 'android'
+        ? `${RNFS.DownloadDirectoryPath}/CV_VoVanViet.pdf`
+        : `${RNFS.DocumentDirectoryPath}/CV_VoVanViet.pdf`;
+
+      console.log('Copying file to:', downloadPath);
+
+      // Kiểm tra và xóa file cũ nếu tồn tại
+      const downloadExists = await RNFS.exists(downloadPath);
+      if (downloadExists) {
+        await RNFS.unlink(downloadPath);
+        console.log('Deleted existing file at:', downloadPath);
+      }
+
+      // Copy file
+      await RNFS.copyFile(assetPath, downloadPath);
+      console.log('File copied successfully to:', downloadPath);
+      
+      showToast.success('CV đã được tải xuống thành công!');
+
+      // Mở file PDF trong PDFViewer
+      if (Platform.OS === 'android') {
+        await RNFS.scanFile(downloadPath);
+        const fileUrl = `file://${downloadPath}`;
+        const supported = await Linking.canOpenURL(fileUrl);
+        if (supported) {
+          await Linking.openURL(fileUrl);
+        } else {
+          navigation.navigate('PDFViewer', { filePath: fileUrl });
+        }
+      } else {
+        // Trên iOS luôn mở bằng PDFViewer
+        const fileUrl = `file://${downloadPath}`;
+        navigation.navigate('PDFViewer', { filePath: fileUrl });
+      }
+    } catch (error: any) {
+      console.error('Download error:', error);
+      showToast.error('Không thể tải CV: ' + error.message);
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -196,11 +321,17 @@ const ProfileScreen = ({ navigation }: any) => {
 
       {/* Actions */}
       <View style={styles.actionsContainer}>
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity 
+          style={styles.actionButton}
+          onPress={handleShareProfile}
+        >
           <Icon name="share" size={20} color="#fff" />
           <Text style={styles.actionButtonText}>Chia sẻ hồ sơ</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.actionButton, styles.downloadButton]}>
+        <TouchableOpacity 
+          style={[styles.actionButton, styles.downloadButton]}
+          onPress={handleDownloadCV}
+        >
           <Icon name="download" size={20} color="#fff" />
           <Text style={styles.actionButtonText}>Tải CV</Text>
         </TouchableOpacity>

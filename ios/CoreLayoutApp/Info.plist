@@ -93,5 +93,8 @@
 	
 	<key>NSUserNotificationsUsageDescription</key>
 	<string>Edu BridgeTrace needs to send you notifications</string>
+
+	<key>NSDocumentPickerUsageDescription</key>
+	<string>Edu BridgeTrace needs access to document picker to upload your CV</string>
 </dict>
 </plist>

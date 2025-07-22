@@ -51,11 +51,15 @@ const LearningScreen = ({ navigation }: any) => {
   const filters = ['Tất cả', 'Cơ bản', 'Trung bình', 'Nâng cao'];
 
   const handleBuyCourse = (course: Course) => {
-    console.log(`Buying course: ${course.title}`);
+
   };
 
   const handleCoursePress = (course: Course) => {
     navigation.navigate('DetailLearningScreen', { course });
+  };
+
+  const handleNotificationPress = () => {
+    navigation.navigate('Notification' as never);
   };
 
   const renderCourseItem = ({ item }: { item: Course }) => (
@@ -91,7 +95,7 @@ const LearningScreen = ({ navigation }: any) => {
         </View>
         <TouchableOpacity
           style={styles.buyButton}
-          onPress={() => handleBuyCourse(item)}
+          onPress={() => handleCoursePress(item)}
         >
           <Text style={styles.buyButtonText}>Đăng ký học</Text>
         </TouchableOpacity>
@@ -101,7 +105,7 @@ const LearningScreen = ({ navigation }: any) => {
 
   return (
     <View style={styles.container}>
-      <Header onNotificationPress={() => {}} />
+      <Header onNotificationPress={handleNotificationPress} />
       
       <View style={styles.searchContainer}>
         <View style={styles.searchBox}>

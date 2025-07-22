@@ -10,7 +10,9 @@ import {
     StatusBar,
     Modal,
     ActivityIndicator,
+    Alert,
 } from 'react-native';
+import DocumentPicker, { types } from 'react-native-document-picker';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '../../styles/theme';
@@ -20,194 +22,232 @@ const DetailJobScreen = ({ route, navigation }: any) => {
     const [selectedTab, setSelectedTab] = useState('overview');
     const [isApplyVisible, setIsApplyVisible] = useState(false);
     const [isApplying, setIsApplying] = useState(false);
+    const [selectedCV, setSelectedCV] = useState<any>(null);
 
-    const handleApplyJob = async () => {
-        setIsApplying(true);
-        setTimeout(() => {
-            setIsApplying(false);
-            setIsApplyVisible(false);
-        }, 2000);
+    const handleSelectCV = async () => {
+        try {
+            const result = await DocumentPicker.pick({
+                type: [types.pdf],
+                allowMultiSelection: false,
+            });
+
+            if (result && result.length > 0) {
+                const file = result[0];
+                if (file.size && file.size > 5 * 1024 * 1024) { // 5MB limit
+                    Alert.alert('Error', 'Kích thước file phải nhỏ hơn 5MB');
+                    return;
+                }
+                setSelectedCV(file);
+            }
+        } catch (err) {
+            if (!DocumentPicker.isCancel(err)) {
+                Alert.alert('Error', 'Chọn CV thất bại. Vui lòng thử lại.');
+            }
+        }
     };
 
-    const ApplyModal = () => (
+    const handleApply = async () => {
+        if (!selectedCV) {
+            Alert.alert('Error', 'Vui lòng chọn CV của bạn');
+            return;
+        }
+
+        setIsApplying(true);
+        try {
+            // TODO: Implement API call to submit CV
+            await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API call
+            Alert.alert('Success', 'CV của bạn đã được gửi thành công');
+            setIsApplyVisible(false);
+            setSelectedCV(null);
+        } catch (error) {
+            Alert.alert('Error', 'Gửi CV thất bại. Vui lòng thử lại.');
+        } finally {
+            setIsApplying(false);
+        }
+    };
+
+    const renderApplyModal = () => (
         <Modal
-            animationType="slide"
-            transparent={true}
             visible={isApplyVisible}
+            transparent
+            animationType="slide"
             onRequestClose={() => setIsApplyVisible(false)}
         >
             <View style={styles.modalOverlay}>
                 <View style={styles.modalContent}>
-                    <View style={styles.modalHeader}>
-                        <Text style={styles.modalTitle}>Xác nhận ứng tuyển</Text>
-                        <TouchableOpacity
+                    <Text style={styles.modalTitle}>Apply for {job.title}</Text>
+                    <Text style={styles.modalSubtitle}>{job.company}</Text>
+
+                    <TouchableOpacity 
+                        style={styles.selectCVButton}
+                        onPress={handleSelectCV}
+                    >
+                        <Icon name="file-upload" size={24} color={COLORS.primary} />
+                        <Text style={styles.selectCVText}>
+                            {selectedCV ? 'Change CV' : 'Select CV'}
+                        </Text>
+                    </TouchableOpacity>
+
+                    {selectedCV && (
+                        <View style={styles.selectedFileContainer}>
+                            <Icon name="description" size={20} color={COLORS.primary} />
+                            <Text style={styles.selectedFileName} numberOfLines={1}>
+                                {selectedCV.name}
+                            </Text>
+                        </View>
+                    )}
+
+                    <View style={styles.modalButtons}>
+                        <TouchableOpacity 
+                            style={styles.cancelButton}
                             onPress={() => setIsApplyVisible(false)}
-                            style={styles.closeButton}
                         >
-                            <Icon name="close" size={24} color="#666666" />
+                            <Text style={styles.cancelButtonText}>Cancel</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity 
+                            style={[styles.applyButton, !selectedCV && styles.disabledButton]}
+                            onPress={handleApply}
+                            disabled={!selectedCV || isApplying}
+                        >
+                            {isApplying ? (
+                                <ActivityIndicator color="#FFFFFF" />
+                            ) : (
+                                <Text style={styles.applyButtonText}>Submit Application</Text>
+                            )}
                         </TouchableOpacity>
                     </View>
-
-                    <View style={styles.jobInfo}>
-                        <Text style={styles.modalJobTitle}>{job.title}</Text>
-                        <View style={styles.companyRow}>
-                            <Text style={styles.modalLabel}>Công ty:</Text>
-                            <Text style={styles.modalCompany}>{job.company}</Text>
-                        </View>
-                        <View style={styles.salaryRow}>
-                            <Text style={styles.modalLabel}>Lương:</Text>
-                            <Text style={styles.modalSalary}>{job.salary}</Text>
-                        </View>
-                    </View>
-
-                    <TouchableOpacity
-                        style={styles.confirmButton}
-                        onPress={handleApplyJob}
-                        disabled={isApplying}
-                    >
-                        {isApplying ? (
-                            <ActivityIndicator color="#FFFFFF" />
-                        ) : (
-                            <Text style={styles.confirmButtonText}>Xác nhận ứng tuyển</Text>
-                        )}
-                    </TouchableOpacity>
                 </View>
             </View>
         </Modal>
     );
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-            <View style={styles.container}>
-                <View style={styles.header}>
+            <View style={styles.header}>
+                <TouchableOpacity
+                    style={styles.backButton}
+                    onPress={() => navigation.goBack()}
+                >
+                    <Icon name="arrow-back-ios" size={24} color="#2D2D2D" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.saveButton}>
+                    <Icon name="bookmark-outline" size={24} color="#2D2D2D" />
+                </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+                <View style={styles.jobHeader}>
+                    <Text style={styles.jobTitle}>{job.title}</Text>
+                    <Text style={styles.companyName}>{job.company}</Text>
+                    
+                    <View style={styles.stats}>
+                        <View style={styles.statItem}>
+                            <Icon name="location-on" size={20} color={COLORS.primary} />
+                            <Text style={styles.statText}>{job.location}</Text>
+                        </View>
+                        <View style={styles.statItem}>
+                            <Icon name="work" size={20} color={COLORS.primary} />
+                            <Text style={styles.statText}>{job.type}</Text>
+                        </View>
+                        <View style={styles.statItem}>
+                            <Icon name="access-time" size={20} color={COLORS.primary} />
+                            <Text style={styles.statText}>{job.posted}</Text>
+                        </View>
+                    </View>
+                </View>
+
+                <View style={styles.tabs}>
                     <TouchableOpacity
-                        style={styles.backButton}
-                        onPress={() => navigation.goBack()}
+                        style={[styles.tab, selectedTab === 'overview' && styles.activeTab]}
+                        onPress={() => setSelectedTab('overview')}
                     >
-                        <Icon name="arrow-back-ios" size={24} color="#2D2D2D" />
+                        <Text style={[styles.tabText, selectedTab === 'overview' && styles.activeTabText]}>
+                            Tổng quan
+                        </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.saveButton}>
-                        <Icon name="bookmark-outline" size={24} color="#2D2D2D" />
+                    <TouchableOpacity
+                        style={[styles.tab, selectedTab === 'requirements' && styles.activeTab]}
+                        onPress={() => setSelectedTab('requirements')}
+                    >
+                        <Text style={[styles.tabText, selectedTab === 'requirements' && styles.activeTabText]}>
+                            Yêu cầu
+                        </Text>
                     </TouchableOpacity>
                 </View>
 
-                <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-                    <View style={styles.jobHeader}>
-                        <Text style={styles.jobTitle}>{job.title}</Text>
-                        <Text style={styles.companyName}>{job.company}</Text>
-                        
-                        <View style={styles.stats}>
-                            <View style={styles.statItem}>
-                                <Icon name="location-on" size={20} color={COLORS.primary} />
-                                <Text style={styles.statText}>{job.location}</Text>
-                            </View>
-                            <View style={styles.statItem}>
-                                <Icon name="work" size={20} color={COLORS.primary} />
-                                <Text style={styles.statText}>{job.type}</Text>
-                            </View>
-                            <View style={styles.statItem}>
-                                <Icon name="access-time" size={20} color={COLORS.primary} />
-                                <Text style={styles.statText}>{job.posted}</Text>
-                            </View>
-                        </View>
-                    </View>
-
-                    <View style={styles.tabs}>
-                        <TouchableOpacity
-                            style={[styles.tab, selectedTab === 'overview' && styles.activeTab]}
-                            onPress={() => setSelectedTab('overview')}
-                        >
-                            <Text style={[styles.tabText, selectedTab === 'overview' && styles.activeTabText]}>
-                                Tổng quan
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={[styles.tab, selectedTab === 'requirements' && styles.activeTab]}
-                            onPress={() => setSelectedTab('requirements')}
-                        >
-                            <Text style={[styles.tabText, selectedTab === 'requirements' && styles.activeTabText]}>
-                                Yêu cầu
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    {selectedTab === 'overview' ? (
-                        <View style={styles.overviewContent}>
-                            <View style={styles.section}>
-                                <Text style={styles.sectionTitle}>Chi tiết công việc</Text>
-                                <View style={styles.jobDetailsList}>
-                                    <View style={styles.jobDetailItem}>
-                                        <Icon name="business" size={20} color={COLORS.primary} />
-                                        <View style={styles.detailTextContainer}>
-                                            <Text style={styles.detailLabel}>Công ty</Text>
-                                            <Text style={styles.detailText}>{job.company}</Text>
-                                        </View>
+                {selectedTab === 'overview' ? (
+                    <View style={styles.overviewContent}>
+                        <View style={styles.section}>
+                            <Text style={styles.sectionTitle}>Chi tiết công việc</Text>
+                            <View style={styles.jobDetailsList}>
+                                <View style={styles.jobDetailItem}>
+                                    <Icon name="business" size={20} color={COLORS.primary} />
+                                    <View style={styles.detailTextContainer}>
+                                        <Text style={styles.detailLabel}>Công ty</Text>
+                                        <Text style={styles.detailText}>{job.company}</Text>
                                     </View>
-                                    <View style={styles.jobDetailItem}>
-                                        <Icon name="location-on" size={20} color={COLORS.primary} />
-                                        <View style={styles.detailTextContainer}>
-                                            <Text style={styles.detailLabel}>Địa điểm</Text>
-                                            <Text style={styles.detailText}>{job.location}</Text>
-                                        </View>
+                                </View>
+                                <View style={styles.jobDetailItem}>
+                                    <Icon name="location-on" size={20} color={COLORS.primary} />
+                                    <View style={styles.detailTextContainer}>
+                                        <Text style={styles.detailLabel}>Địa điểm</Text>
+                                        <Text style={styles.detailText}>{job.location}</Text>
                                     </View>
-                                    <View style={styles.jobDetailItem}>
-                                        <Icon name="work" size={20} color={COLORS.primary} />
-                                        <View style={styles.detailTextContainer}>
-                                            <Text style={styles.detailLabel}>Loại công việc</Text>
-                                            <Text style={styles.detailText}>{job.type}</Text>
-                                        </View>
+                                </View>
+                                <View style={styles.jobDetailItem}>
+                                    <Icon name="work" size={20} color={COLORS.primary} />
+                                    <View style={styles.detailTextContainer}>
+                                        <Text style={styles.detailLabel}>Loại công việc</Text>
+                                        <Text style={styles.detailText}>{job.type}</Text>
                                     </View>
-                                    <View style={styles.jobDetailItem}>
-                                        <Icon name="access-time" size={20} color={COLORS.primary} />
-                                        <View style={styles.detailTextContainer}>
-                                            <Text style={styles.detailLabel}>Đăng tuyển</Text>
-                                            <Text style={styles.detailText}>{job.posted}</Text>
-                                        </View>
+                                </View>
+                                <View style={styles.jobDetailItem}>
+                                    <Icon name="access-time" size={20} color={COLORS.primary} />
+                                    <View style={styles.detailTextContainer}>
+                                        <Text style={styles.detailLabel}>Đăng tuyển</Text>
+                                        <Text style={styles.detailText}>{job.posted}</Text>
                                     </View>
                                 </View>
                             </View>
                         </View>
-                    ) : (
-                        <View style={styles.requirementsContent}>
-                            {job.requirements.map((item: string, index: number) => (
-                                <View key={index} style={styles.requirementItem}>
-                                    <Icon name="check-circle" size={20} color={COLORS.primary} />
-                                    <Text style={styles.requirementText}>{item}</Text>
-                                </View>
-                            ))}
-                        </View>
-                    )}
-                </ScrollView>
-
-                <ApplyModal />
-
-                <View style={styles.footer}>
-                    <View style={styles.salaryContainer}>
-                        <Text style={styles.salary}>{job.salary}</Text>
-                        <Text style={styles.period}>/tháng</Text>
                     </View>
-                    <TouchableOpacity
-                        style={styles.applyButton}
-                        activeOpacity={0.8}
-                        onPress={() => setIsApplyVisible(true)}
-                    >
-                        <Text style={styles.applyButtonText}>Ứng tuyển ngay</Text>
-                    </TouchableOpacity>
+                ) : (
+                    <View style={styles.requirementsContent}>
+                        {job.requirements.map((item: string, index: number) => (
+                            <View key={index} style={styles.requirementItem}>
+                                <Icon name="check-circle" size={20} color={COLORS.primary} />
+                                <Text style={styles.requirementText}>{item}</Text>
+                            </View>
+                        ))}
+                    </View>
+                )}
+            </ScrollView>
+
+            {renderApplyModal()}
+
+            <View style={styles.footer}>
+                <View style={styles.salaryContainer}>
+                    <Text style={styles.salary}>{job.salary}</Text>
+                    <Text style={styles.period}>/tháng</Text>
                 </View>
+                <TouchableOpacity
+                    style={styles.applyButton}
+                    activeOpacity={0.8}
+                    onPress={() => setIsApplyVisible(true)}
+                >
+                    <Text style={styles.applyButtonText}>Ứng tuyển ngay</Text>
+                </TouchableOpacity>
             </View>
         </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: '#FFFFFF',
-    },
     container: {
         flex: 1,
-        backgroundColor: '#F8F8FA',
+        backgroundColor: '#FFFFFF',
     },
     header: {
         flexDirection: 'row',
@@ -393,85 +433,76 @@ const styles = StyleSheet.create({
     modalOverlay: {
         flex: 1,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        justifyContent: 'flex-end',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     modalContent: {
         backgroundColor: '#FFFFFF',
-        borderTopLeftRadius: wp('5%'),
-        borderTopRightRadius: wp('5%'),
+        borderRadius: wp('5%'),
         padding: wp('5%'),
-        minHeight: hp('40%'),
-    },
-    modalHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: hp('3%'),
+        width: wp('90%'),
+        maxHeight: hp('80%'),
     },
     modalTitle: {
-        fontSize: wp('4.5%'),
-        fontWeight: 'bold',
-        color: '#2D2D2D',
-    },
-    closeButton: {
-        padding: wp('2%'),
-    },
-    jobInfo: {
-        backgroundColor: '#F8F8FA',
-        padding: wp('4%'),
-        borderRadius: wp('3%'),
-        marginBottom: hp('3%'),
-    },
-    modalJobTitle: {
-        fontSize: wp('4%'),
+        fontSize: wp('5%'),
         fontWeight: '600',
         color: '#2D2D2D',
-        marginBottom: hp('2%'),
-    },
-    companyRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
         marginBottom: hp('1%'),
     },
-    salaryRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    modalLabel: {
-        fontSize: wp('3.8%'),
+    modalSubtitle: {
+        fontSize: wp('4%'),
         color: '#666666',
+        marginBottom: hp('3%'),
     },
-    modalCompany: {
-        fontSize: wp('4%'),
-        fontWeight: '500',
-        color: '#2D2D2D',
-    },
-    modalSalary: {
-        fontSize: wp('4%'),
-        fontWeight: 'bold',
-        color: COLORS.primary,
-    },
-    confirmButton: {
-        backgroundColor: COLORS.primary,
-        paddingVertical: hp('2%'),
-        borderRadius: wp('3%'),
+    selectCVButton: {
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: COLORS.primary,
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
+        borderWidth: 2,
+        borderColor: COLORS.primary,
+        borderStyle: 'dashed',
+        borderRadius: wp('2%'),
+        padding: wp('4%'),
+        marginBottom: hp('2%'),
     },
-    confirmButtonText: {
-        color: '#FFFFFF',
+    selectCVText: {
+        marginLeft: wp('2%'),
         fontSize: wp('4%'),
-        fontWeight: '600',
+        color: COLORS.primary,
+        fontWeight: '500',
+    },
+    selectedFileContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(127, 61, 255, 0.1)',
+        padding: wp('3%'),
+        borderRadius: wp('2%'),
+        marginBottom: hp('3%'),
+    },
+    selectedFileName: {
+        marginLeft: wp('2%'),
+        fontSize: wp('3.5%'),
+        color: '#2D2D2D',
+        flex: 1,
+    },
+    modalButtons: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        gap: wp('3%'),
+    },
+    cancelButton: {
+        paddingVertical: hp('1.5%'),
+        paddingHorizontal: wp('4%'),
+        borderRadius: wp('2%'),
+        backgroundColor: '#F0F0F0',
+    },
+    cancelButtonText: {
+        fontSize: wp('3.5%'),
+        color: '#666666',
+        fontWeight: '500',
+    },
+    disabledButton: {
+        opacity: 0.5,
     },
 });
 
