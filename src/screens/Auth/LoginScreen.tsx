@@ -65,7 +65,7 @@ const LoginScreen = () => {
                 setError(response.data.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
             }
         } catch (error: any) {
-            console.log('Error response:', error);
+            console.log('Error response:', error.response);
             const errorMessage = error.response?.data?.message || 'Đăng nhập thất bại. Vui lòng thử lại.';
             setError(errorMessage);
         } finally {

@@ -29,7 +29,7 @@ const mockCertificates = [
     },
     issue_date: '2025-06-15',
     expiry_date: '2028-06-15',
-    certificate_url: 'https://example.com/cert1.pdf',
+    image_url: require('../../assets/images/image2.png'),
     blockchain_hash: '0x123...abc',
     status: 1, // Đã xác minh
     description: 'Chứng chỉ hoàn thành khóa học React Native nâng cao',
@@ -47,7 +47,7 @@ const mockCertificates = [
       email: 'info@dtu.edu.vn'
     },
     issue_date: '2025-05-20',
-    certificate_url: 'https://example.com/cert2.pdf',
+    image_url: require('../../assets/images/image1.png'),
     blockchain_hash: '0x456...def',
     status: 1,
     description: 'Bằng tốt nghiệp ngành Công nghệ thông tin',
@@ -66,6 +66,7 @@ const mockCertificates = [
     },
     issue_date: '2025-07-01',
     status: 2, // Đang xử lý
+    image_url: require('../../assets/images/image.png'),
     description: 'Chứng chỉ khóa học Solidity và Smart Contract',
     metadata: {
       type: 'certificate',
@@ -106,7 +107,7 @@ ${selectedCertificate.blockchain_hash ? '🔗 Đã xác minh trên Blockchain' :
 
       await Share.share({
         message,
-        url: selectedCertificate.certificate_url,
+        url: selectedCertificate.image_url,
         title: `Chứng chỉ: ${selectedCertificate.title}`,
       });
     } catch (error) {
@@ -147,7 +148,7 @@ ${selectedCertificate.blockchain_hash ? '🔗 Đã xác minh trên Blockchain' :
       onPress={() => handleViewCertificate(certificate)}
     >
       <Image 
-        source={require('../../assets/images/logo.png')}
+        source={certificate.image_url}
         style={styles.certificateImage}
         resizeMode="cover"
       />
@@ -366,7 +367,7 @@ const styles = StyleSheet.create({
   },
   certificateImage: {
     width: '100%',
-    height: hp('15%'),
+    height: hp('20%'),
     backgroundColor: '#F5F5F5',
   },
   cardContent: {

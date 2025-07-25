@@ -7,7 +7,7 @@ interface ApiResponse<T> {
   message: string;
 }
 
-const baseUrl = 'http://192.168.1.146:8000/api';
+const baseUrl = 'https://vietchain.dzfullstack.edu.vn/api';
 
 const api = axios.create({
   baseURL: baseUrl,
